@@ -5,7 +5,8 @@ ITBA - Cloud Data Engineering - Trabajo Práctico Final
 
 Pipeline automatizado para recolección y procesamiento de datos meteorológicos desde OpenMeteo API con almacenamiento en PostgreSQL.
 
-📁 Estructura del Proyecto
+# 📁 Estructura del Proyecto
+
 ├── weather_data_collector/     # Módulo principal
 │   ├── __init__.py
 │   ├── api_client.py          # Cliente de API OpenMeteo
@@ -27,7 +28,7 @@ Pipeline automatizado para recolección y procesamiento de datos meteorológicos
 ├── .gitignore
 └── README.md
 
-🚀 Instalación
+# 🚀 Instalación
 1. Clonar el Repositorio
 git clone https://github.com/nsaldarriaga/cloud-data-engineering-.git
 cd cloud-data-engineering-
@@ -44,11 +45,11 @@ docker-compose up -d
 # Verificar que esté corriendo
 docker-compose ps
 
-Resultado esperado:
+#  Resultado esperado:
 NAME               STATUS                    PORTS
 weather_postgres   Up X seconds (healthy)   0.0.0.0:5432->5432/tcp
 
-🗄️ Configuración de la Base de Datos
+#  🗄️ Configuración de la Base de Datos
 
 El contenedor PostgreSQL se crea automáticamente con las siguientes credenciales:
 Parámetro Valor
@@ -58,15 +59,15 @@ Base de Datos weather_db
 Usuario   weather_user
 Contraseña  weather_pass
 
-Conectarse a PostgreSQL
+#  Conectarse a PostgreSQL
 Desde la línea de comandos:
 docker-compose exec postgres psql -U weather_user -d weather_db
 
-💻 Uso del Pipeline
+#  💻 Uso del Pipeline
 Ejecutar Pipeline Completo
 python -m scripts.main
 
-Opciones de Ejecución
+#  Opciones de Ejecución
 
 # Solo datos históricos
 python -m scripts.main --skip-forecast
@@ -77,7 +78,7 @@ python -m scripts.main --skip-historical
 # Ver todas las opciones
 python -m scripts.main --help
 
-📊 Datos Generados
+#  📊 Datos Generados
 
 El pipeline genera archivos JSON en data/raw/:
 historical_<location>_<date>.json - Datos históricos (2020-2025)
@@ -85,14 +86,14 @@ forecast_<location>_<date>.json - Pronósticos (7 días)
 combined_<location>_<date>.json - Datos combinados
 
 
-🧪 Testing
+#  🧪 Testing
 # Ejecutar todos los tests
 python -m pytest test/ -v
 
 # Ejecutar tests específicos
 python -m pytest test/test_config.py -v
 
-🐳 Comandos Docker Útiles
+#  🐳 Comandos Docker Útiles
 
 # Ver logs de PostgreSQL
 docker-compose logs -f postgres
@@ -109,10 +110,10 @@ docker-compose down
 # Ver estado del contenedor
 docker-compose ps
 
-📚 Dataset
+#  📚 Dataset
 Para información detallada sobre el dataset y preguntas de negocio, ver DATASET_DESCRIPTION.md.
 
-🛠️ Tecnologías Utilizadas
+#  🛠️ Tecnologías Utilizadas
 
 Python 3.7+ - Lenguaje principal
 OpenMeteo API - Fuente de datos meteorológicos
@@ -123,7 +124,7 @@ pytest - Testing
 requests-cache - Caching de API calls
 
 
-🔧 Troubleshooting
+#  🔧 Troubleshooting
 Error: Puerto 5432 ya en uso
 Si ves el error # Bind for 0.0.0.0:5432 failed: port is already allocated:
 
