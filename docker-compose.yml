@@ -1,0 +1,37 @@
+# docker-compose.yml para PostgreSQL 12.7
+# Este archivo define la configuración de servicios Docker
+
+services:  # Aquí definimos todos los servicios (contenedores)
+  
+  postgres:  # Nombre del servicio (puedes usar cualquier nombre)
+    image: postgres:12.7  # Imagen oficial de PostgreSQL versión 12.7
+    
+    container_name: weather_postgres  # Nombre específico del contenedor
+    
+    # Variables de entorno para configurar PostgreSQL
+    environment:
+      POSTGRES_DB: weather_db          # Nombre de la base de datos
+      POSTGRES_USER: weather_user      # Usuario de la base de datos
+      POSTGRES_PASSWORD: weather_pass  # Contraseña (cambiar en producción)
+    
+    # Mapeo de puertos: puerto_host:puerto_contenedor
+    ports:
+      - "5432:5432"  
+    
+    # Volumen para persistir datos (opcional pero recomendado)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    
+    # Reiniciar automáticamente si el contenedor falla
+    restart: unless-stopped
+    
+    # Verificación de salud del contenedor
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U weather_user -d weather_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Definición de volúmenes nombrados
+volumes:
+  postgres_data:  # Volumen para persistir datos de PostgreSQL

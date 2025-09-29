@@ -10,7 +10,7 @@ retry-requests>=2.0.0
 pytest>=7.0.0
 pytest-cov>=4.0.0
 
-# Database connectivity (for future exercises)
+# Database connectivity
 psycopg2-binary>=2.9.0
 sqlalchemy>=2.0.0
 
