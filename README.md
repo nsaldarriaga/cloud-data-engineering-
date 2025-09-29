@@ -21,9 +21,13 @@ Pipeline automatizado para recolección y procesamiento de datos meteorológicos
 │   └── test_utils.py          # Tests de utilidades
 ├── data/
 │   ├── raw/                   # Datos JSON originales
-│   └── processed/             # Datos procesados (futuro)
+|   ├──DATASET_DESCRIPTION.md     # Descripción del dataset y preguntas de negocio  
 ├── docker-compose.yml         # Configuración de PostgreSQL
-├── DATASET_DESCRIPTION.md     # Descripción del dataset y preguntas de negocio
+├── database/
+│   ├──init.ps1
+│   ├──init.sh
+│   └──sql/
+|   ├── 01_create_tables.sql
 ├── requirements.txt
 ├── .gitignore
 └── README.md
@@ -58,6 +62,48 @@ Puerto    5432
 Base de Datos weather_db
 Usuario   weather_user
 Contraseña  weather_pass
+
+# Estructura de Tablas
+El proyecto utiliza dos tablas principales:
+## locations - Ubicaciones meteorológicas
+
+- id (PK) - Identificador único
+- location_name - Nombre de la ubicación (iowa_center, illinois_center)
+- created_at - Timestamp de creación
+
+## weather_data - Datos meteorológicos (históricos y pronósticos)
+
+-  id (PK) - Identificador único
+- location_id (FK) - Referencia a locations
+- date - Fecha del registro
+- data_type - Tipo de dato ('historical' o 'forecast')
+- weather_code - Código WMO del clima
+- temperature_2m_max - Temperatura máxima (°C)
+- temperature_2m_min - Temperatura mínima (°C)
+- daylight_duration - Duración de luz diurna (segundos)
+- shortwave_radiation_sum - Radiación de onda corta
+- precipitation_sum - Precipitación total (mm)
+- et0_fao_evapotranspiration - Evapotranspiración de referencia
+- soil_moisture_0_to_100cm_mean - Humedad del suelo
+- vapour_pressure_deficit_max - Déficit de presión de vapor
+- created_at - Timestamp de creación
+
+# Crear Tablas en la Base de Datos
+### Ejecutar script de inicialización (PowerShell)
+Get-Content .\database\sql\01_create_tables.sql | docker exec -i weather_postgres psql -U weather_user -d weather_db
+
+### O usando Git Bash
+database/init.sh
+
+# Verificar Estructura
+### Ver tablas creadas
+docker exec -it weather_postgres psql -U weather_user -d weather_db -c "\dt"
+
+# Ver estructura de weather_data
+docker exec -it weather_postgres psql -U weather_user -d weather_db -c "\d weather_data"
+
+# Ver estructura de locations
+docker exec -it weather_postgres psql -U weather_user -d weather_db -c "\d locations"
 
 #  Conectarse a PostgreSQL
 Desde la línea de comandos:
