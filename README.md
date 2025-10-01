@@ -13,18 +13,8 @@ Pipeline completo de ingeniería de datos que recolecta, almacena y analiza dato
 
 # Arquitectura del Sistema
 
- graph LR
-    A[OpenMeteo API] -->|JSON| B[Pipeline Python]
-    B -->|Archivos JSON| C[data/raw/]
-    C -->|Volume Mount| D[Docker Loader]
-    D -->|INSERT| E[(PostgreSQL)]
-    E -->|SELECT| F[Docker Reporter]
-    F -->|Reportes| G[Consola]
-    
-    style A fill:#e1f5ff
-    style E fill:#ffe1e1
-    style D fill:#e8f5e8
-    style F fill:#e8f5e8
+![Setup y Ejecución Completa](docs/images/setup_output.png)
+
 
 # 🎯 Estructura del Proyecto
 
