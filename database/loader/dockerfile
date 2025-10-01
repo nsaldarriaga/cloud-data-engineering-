@@ -1,0 +1,23 @@
+# Imagen base: Python 3.11 slim (liviana pero completa)
+FROM python:3.11-slim
+
+# Información del mantenedor
+LABEL maintainer="nsaldarriaga"
+LABEL description="Weather Data Loader for PostgreSQL"
+
+# Directorio de trabajo dentro del container
+WORKDIR /app
+
+# Copiar archivo de dependencias
+COPY requirements.txt .
+
+# Instalar dependencias de Python
+# --no-cache-dir: no guarda caché para reducir tamaño de imagen
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar el script de carga
+COPY load_data.py .
+
+# Comando por defecto al ejecutar el container
+# Se ejecutará: python load_data.py
+CMD ["python", "load_data.py"]
