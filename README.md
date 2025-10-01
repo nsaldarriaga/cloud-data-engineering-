@@ -1,194 +1,186 @@
-# TP Final - Fundación de Cloud Data Engeneering - ITBA
+# Weather Data Engineering Project
 
-Weather Data Collection Pipeline
-ITBA - Cloud Data Engineering - Trabajo Práctico Final
+# 📋 Descripción del Proyecto
 
-Pipeline automatizado para recolección y procesamiento de datos meteorológicos desde OpenMeteo API con almacenamiento en PostgreSQL.
+Pipeline completo de ingeniería de datos que recolecta, almacena y analiza datos meteorológicos de dos ubicaciones en Estados Unidos (Iowa e Illinois) utilizando tecnologías cloud-native y contenedores Docker.
 
-# 📁 Estructura del Proyecto
+### Tecnologías Utilizadas
 
-├── weather_data_collector/     # Módulo principal
-│   ├── __init__.py
-│   ├── api_client.py          # Cliente de API OpenMeteo
-│   ├── config.py              # Configuraciones
-│   └── utils.py               # Utilidades de datos
-├── scripts/
-│   ├── __init__.py
-│   └── main.py                # Script principal de ejecución
-├── test/
-│   ├── __init__.py
-│   ├── test_config.py         # Tests de configuración
-│   └── test_utils.py          # Tests de utilidades
+- Python 3.11: Scripts de recolección, carga y análisis
+- PostgreSQL 12.7: Base de datos relacional
+- Docker & Docker Compose: Orquestación de contenedores
+- OpenMeteo API: Fuente de datos meteorológicos
+
+# 🎯 Estructura del Proyecto
+
+cloud-data-engineering/
 ├── data/
-│   ├── raw/                   # Datos JSON originales
-|   ├──DATASET_DESCRIPTION.md     # Descripción del dataset y preguntas de negocio  
-├── docker-compose.yml         # Configuración de PostgreSQL
+│   └── raw/                          # Archivos JSON con datos meteorológicos
 ├── database/
-│   ├──init.ps1
-│   ├──init.sh
-│   └──sql/
-|   ├── 01_create_tables.sql
-├── requirements.txt
-├── .gitignore
+│   ├── sql/
+│   │   └── 01_create_tables.sql      # DDL: Creación de tablas
+│   ├── loader/                       # Carga de datos
+│   │   ├── Dockerfile
+│   │   ├── requirements.txt
+│   │   └── load_data.py
+│   └── reporter/                     # Reportes SQL
+│       ├── Dockerfile
+│       ├── requirements.txt
+│       └── generate_report.py
+├── weather_data_collector/           # Pipeline de recolección
+│   ├── scripts/
+│   │   └── main.py
+│   └── test/
+├── docker-compose.yml                # PostgreSQL en Docker
+├── setup_project.ps1                 # Script de setup automatizado
 └── README.md
 
-# 🚀 Instalación
-1. Clonar el Repositorio
-git clone https://github.com/nsaldarriaga/cloud-data-engineering-.git
-cd cloud-data-engineering-
+# 🚀 Setup Rápido
 
-2. Instalar Dependencias Python
-pip install -r requirements.txt
+ ### Prerrequisitos
 
-3. Levantar Base de Datos PostgreSQL (Docker)
-Requisito: Tener Docker Desktop instalado.
+  - Docker Desktop instalado y corriendo
+  - PowerShell (Windows) o Bash (Linux/Mac)
+  - Git
 
-# Levantar contenedor de PostgreSQL
-docker-compose up -d
+### Instalación Automática
+   
+    git clone https://github.com/nsaldarriaga/cloud-data-engineering-.git
+    cd cloud-data-engineering-
 
-# Verificar que esté corriendo
-docker-compose ps
+    .\setup_project.ps1 ### script de setup automático
 
-#  Resultado esperado:
-NAME               STATUS                    PORTS
-weather_postgres   Up X seconds (healthy)   0.0.0.0:5432->5432/tcp
+Este script ejecutará automáticamente:
 
-#  🗄️ Configuración de la Base de Datos
+- Levantar PostgreSQL con Docker Compose
+- Crear las tablas en la base de datos
+- Construir la imagen del data loader
+- Cargar los datos desde archivos JSON
+- Construir la imagen del reporter
+- Verificar que los datos se cargaron correctamente
 
-El contenedor PostgreSQL se crea automáticamente con las siguientes credenciales:
-Parámetro Valor
-Host      localhost
-Puerto    5432
-Base de Datos weather_db
-Usuario   weather_user
-Contraseña  weather_pass
+Tiempo estimado: 3-5 minutos 
 
-# Estructura de Tablas
-El proyecto utiliza dos tablas principales:
-## locations - Ubicaciones meteorológicas
+# 📚 Setup Manual 
 
-- id (PK) - Identificador único
-- location_name - Nombre de la ubicación (iowa_center, illinois_center)
-- created_at - Timestamp de creación
+Si prefieres ejecutar cada paso manualmente o el script automatizado no funciona en tu sistema:
 
-## weather_data - Datos meteorológicos (históricos y pronósticos)
+- Paso 1: Levantar PostgreSQL (Ejercicio 2)
+  docker-compose up -d 
 
--  id (PK) - Identificador único
-- location_id (FK) - Referencia a locations
-- date - Fecha del registro
-- data_type - Tipo de dato ('historical' o 'forecast')
-- weather_code - Código WMO del clima
-- temperature_2m_max - Temperatura máxima (°C)
-- temperature_2m_min - Temperatura mínima (°C)
-- daylight_duration - Duración de luz diurna (segundos)
-- shortwave_radiation_sum - Radiación de onda corta
-- precipitation_sum - Precipitación total (mm)
-- et0_fao_evapotranspiration - Evapotranspiración de referencia
-- soil_moisture_0_to_100cm_mean - Humedad del suelo
-- vapour_pressure_deficit_max - Déficit de presión de vapor
-- created_at - Timestamp de creación
+- Paso 2: verificar 
+  docker ps 
 
-# Crear Tablas en la Base de Datos
-### Ejecutar script de inicialización (PowerShell)
-Get-Content .\database\sql\01_create_tables.sql | docker exec -i weather_postgres psql -U weather_user -d weather_db
+- Paso 3:  Crear las Tablas (Ejercicio 3)
+  Get-Content .\database\sql\01_create_tables.sql | docker exec -i weather_postgres psql -U weather_user -d weather_db 
 
-### O usando Git Bash
-database/init.sh
+- Paso 4: Construir la imagen del loader (Ejercicio 4)
+  cd database/loader
+  docker build -t weather-data-loader .
+  cd ../.. 
 
-# Verificar Estructura
-### Ver tablas creadas
-docker exec -it weather_postgres psql -U weather_user -d weather_db -c "\dt"
+- Paso 5: Ejecutar la carga de datos (Ejercicio 4)
+  docker run --rm --network host -v ${PWD}/data:/data weather-data-loader 
 
-# Ver estructura de weather_data
-docker exec -it weather_postgres psql -U weather_user -d weather_db -c "\d weather_data"
+- Paso 6: Construir el Reporter (Ejercicio 5)
+  cd database/reporter
+  docker build -t weather-reporter .
+  cd ../..
 
-# Ver estructura de locations
-docker exec -it weather_postgres psql -U weather_user -d weather_db -c "\d locations"
+- Paso 7: Ver reporte
+  docker run --rm --network host weather-reporter
 
-#  Conectarse a PostgreSQL
-Desde la línea de comandos:
-docker-compose exec postgres psql -U weather_user -d weather_db
+# Consultas Incluidas
 
-#  💻 Uso del Pipeline
-Ejecutar Pipeline Completo
-python -m scripts.main
+ El reporte incluye 5 consultas que agregan valor al negocio:
 
-#  Opciones de Ejecución
+1. Promedio de temperaturas por ubicación - Identificar diferencias climáticas regionales
+2. Días con precipitación - Evaluar riesgo de inundaciones y necesidades de drenaje
+3. Temperaturas extremas registradas - Identificar riesgos climáticos extremos
+4. Precipitación mensual 2024 - Patrones estacionales para planificación agrícola
+5. Comparación histórico vs pronóstico - Evaluar tendencias futuras
 
-# Solo datos históricos
-python -m scripts.main --skip-forecast
+# 🔍 Consultas Manuales a la Base de Datos
 
-# Solo pronósticos
-python -m scripts.main --skip-historical
+- Conectarse a PostgreSQL
+  docker exec -it weather_postgres psql -U weather_user -d weather_db
 
-# Ver todas las opciones
-python -m scripts.main --help
+- Ver las tablas
+  \dt
 
-#  📊 Datos Generados
+- Ver estructura de una tabla
+  \d weather_data
 
-El pipeline genera archivos JSON en data/raw/:
-historical_<location>_<date>.json - Datos históricos (2020-2025)
-forecast_<location>_<date>.json - Pronósticos (7 días)
-combined_<location>_<date>.json - Datos combinados
+- Contar registros totales
+  SELECT COUNT(*) FROM weather_data;
+
+- Registros por tipo (históricos vs pronósticos)
+  SELECT data_type, COUNT(*) 
+  FROM weather_data 
+  GROUP BY data_type;
+
+- Últimas temperaturas registradas
+  SELECT l.location_name, w.date, w.temperature_2m_max
+  FROM weather_data w
+  LEFT JOIN locations l ON w.location_id = l.id
+  ORDER BY w.date DESC
+  LIMIT 10;
+
+- Salir
+  \q
+
+# 🗄️ Base de datos (DDL)
+
+- Tablas:
+  
+ 1. locations
+  - id (INTEGER, PK)
+  - location_name (VARCHAR)
+  - created_at (TIMESTAMP)
+
+ 2. weather_data
+  - id (SERIAL, PK)
+  - location_id (INTEGER, FK → locations)
+  - date (TIMESTAMP)
+  - data_type (VARCHAR): 'historical' o 'forecast'
+  - Variables meteorológicas (REAL)
+  - created_at (TIMESTAMP)
+
+ 3. Constraints:
+  - Foreign Key: fk_weather_location
+  - Unique: unique_location_date_type
+
+ 4. Índices:
+  - idx_weather_date
+  - idx_weather_location_type
+  - idx_weather_location_date
+
+# 🧪 Verificación y Testing
+ 
+  ### 1. PostgreSQL corriendo
+    docker ps | Select-String "weather_postgres"
+
+  ### 2. Datos cargados
+    docker exec weather_postgres psql -U weather_user -d weather_db -c "SELECT COUNT(*) FROM weather_data;"
+
+  ### 3. Imágenes construidas
+    docker images | Select-String "weather"
+
+  ### 4. Generar reporte de prueba
+    docker run --rm --network host weather-reporter
+
+# 📈 Datos del Proyecto
+
+- Ubicaciones monitoreadas: 2 (Iowa Center, Illinois Center)
+- Periodo histórico: 2020-01-01 a 2025-09-27 (~2,097 días)
+- Pronósticos: 7-8 días futuros
+- Total registros: ~4,210
+- Variables meteorológicas: 10 por registro
+- Frecuencia: Datos diarios
 
 
-#  🧪 Testing
-# Ejecutar todos los tests
-python -m pytest test/ -v
+# 🔗 Enlaces Útiles
 
-# Ejecutar tests específicos
-python -m pytest test/test_config.py -v
-
-#  🐳 Comandos Docker Útiles
-
-# Ver logs de PostgreSQL
-docker-compose logs -f postgres
-
-# Detener el contenedor
-docker-compose stop
-
-# Iniciar el contenedor
-docker-compose start
-
-# Detener y eliminar (los datos persisten en el volumen)
-docker-compose down
-
-# Ver estado del contenedor
-docker-compose ps
-
-#  📚 Dataset
-Para información detallada sobre el dataset y preguntas de negocio, ver DATASET_DESCRIPTION.md.
-
-#  🛠️ Tecnologías Utilizadas
-
-Python 3.7+ - Lenguaje principal
-OpenMeteo API - Fuente de datos meteorológicos
-PostgreSQL 12.7 - Base de datos relacional
-Docker & Docker Compose - Contenedorización
-pandas - Procesamiento de datos
-pytest - Testing
-requests-cache - Caching de API calls
-
-
-#  🔧 Troubleshooting
-Error: Puerto 5432 ya en uso
-Si ves el error # Bind for 0.0.0.0:5432 failed: port is already allocated:
-
-# Ver qué está usando el puerto
-netstat -ano | findstr :5432
-
-# Detener PostgreSQL local si está instalado
-Stop-Service -Name "postgresql-x64-XX"
-
-# O cambiar el puerto en docker-compose.yml
-ports:
-  - "5433:5432"   # Usar puerto 5433 en lugar de 5432
-
-Contenedor no inicia
-
-# Ver logs para diagnosticar
-docker-compose logs postgres
-
-# Recrear el contenedor
-docker-compose down
-docker-compose up -d
+- OpenMeteo API: https://open-meteo.com/
+- Docker Documentation: https://docs.docker.com/_/postgres
+- PostgreSQL Documentation: https://www.postgresql.org/docs/
