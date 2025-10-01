@@ -1,0 +1,21 @@
+# Imagen base: Python 3.11 slim
+FROM python:3.11-slim
+
+# Información del mantenedor
+LABEL maintainer="nsaldarriaga"
+LABEL description="Weather Data Reporter - SQL Queries"
+
+# Directorio de trabajo
+WORKDIR /app
+
+# Copiar dependencias
+COPY requirements.txt .
+
+# Instalar dependencias
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar el script de reportes
+COPY generate_report.py .
+
+# Ejecutar el script
+CMD ["python", "generate_report.py"]
