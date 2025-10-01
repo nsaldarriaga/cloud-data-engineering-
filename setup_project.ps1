@@ -13,7 +13,7 @@ Write-Host "
 " -ForegroundColor Cyan
 
 $ErrorActionPreference = "Stop"
-$TotalSteps = 7
+$TotalSteps = 8  
 $CurrentStep = 0
 
 # Funcion para mostrar progreso
@@ -139,6 +139,16 @@ if ($recordCount -gt 0) {
 }
 
 # ============================================================================
+# PASO 8: Generar Reporte (NUEVO)
+# ============================================================================
+Show-Progress "Generando reporte de analisis meteorologico"
+
+Write-Host "`nEjecutando consultas SQL y generando reporte...`n" -ForegroundColor Gray
+docker run --rm --network host weather-reporter
+
+Write-Host "`nReporte generado exitosamente" -ForegroundColor Green
+
+# ============================================================================
 # RESUMEN FINAL
 # ============================================================================
 Write-Host "
@@ -152,14 +162,7 @@ Write-Host "  - PostgreSQL corriendo en puerto 5432" -ForegroundColor Green
 Write-Host "  - Tablas creadas (locations, weather_data)" -ForegroundColor Green
 Write-Host "  - Datos cargados: $recordCount registros" -ForegroundColor Green
 Write-Host "  - Imagenes Docker listas (loader, reporter)" -ForegroundColor Green
-
-Write-Host "`nPROXIMOS PASOS:" -ForegroundColor Cyan
-Write-Host "  Ver el reporte:" -ForegroundColor White
-Write-Host "    docker run --rm --network host weather-reporter" -ForegroundColor Gray
-Write-Host "`n  Consultar la base de datos:" -ForegroundColor White
-Write-Host "    docker exec -it weather_postgres psql -U weather_user -d weather_db" -ForegroundColor Gray
-Write-Host "`n  Detener el proyecto:" -ForegroundColor White
-Write-Host "    docker-compose down" -ForegroundColor Gray
+Write-Host "  - Reporte de analisis generado" -ForegroundColor Green
 
 Write-Host "`n$('=' * 80)" -ForegroundColor DarkGray
 Write-Host ""

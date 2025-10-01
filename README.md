@@ -48,7 +48,7 @@ cloud-data-engineering/
     git clone https://github.com/nsaldarriaga/cloud-data-engineering-.git
     cd cloud-data-engineering-
 
-    .\setup_project.ps1 ### script de setup automático
+    .\setup_project.ps1 ### único sript de ejecución automática
 
 Este script ejecutará automáticamente:
 
@@ -65,29 +65,29 @@ Tiempo estimado: 3-5 minutos
 
 Si prefieres ejecutar cada paso manualmente o el script automatizado no funciona en tu sistema:
 
-- Paso 1: Levantar PostgreSQL (Ejercicio 2)
+### Paso 1: Levantar PostgreSQL (Ejercicio 2)
   docker-compose up -d 
 
-- Paso 2: verificar 
+### Paso 2: verificar 
   docker ps 
 
-- Paso 3:  Crear las Tablas (Ejercicio 3)
-  Get-Content .\database\sql\01_create_tables.sql | docker exec -i weather_postgres psql -U weather_user -d weather_db 
+### Paso 3:  Crear las Tablas (Ejercicio 3)
+ Get-Content .\database\sql\01_create_tables.sql | docker exec -i weather_postgres psql -U weather_user -d weather_db 
 
-- Paso 4: Construir la imagen del loader (Ejercicio 4)
+### Paso 4: Construir la imagen del loader (Ejercicio 4)
   cd database/loader
   docker build -t weather-data-loader .
   cd ../.. 
 
-- Paso 5: Ejecutar la carga de datos (Ejercicio 4)
+### Paso 5: Ejecutar la carga de datos (Ejercicio 4)
   docker run --rm --network host -v ${PWD}/data:/data weather-data-loader 
 
-- Paso 6: Construir el Reporter (Ejercicio 5)
+### Paso 6: Construir el Reporter (Ejercicio 5)
   cd database/reporter
   docker build -t weather-reporter .
   cd ../..
 
-- Paso 7: Ver reporte
+### Paso 7: Ver reporte
   docker run --rm --network host weather-reporter
 
 # Consultas Incluidas
@@ -102,31 +102,31 @@ Si prefieres ejecutar cada paso manualmente o el script automatizado no funciona
 
 # 🔍 Consultas Manuales a la Base de Datos
 
-- Conectarse a PostgreSQL
+### Conectarse a PostgreSQL
   docker exec -it weather_postgres psql -U weather_user -d weather_db
 
-- Ver las tablas
+### Ver las tablas
   \dt
 
-- Ver estructura de una tabla
+### Ver estructura de una tabla
   \d weather_data
 
-- Contar registros totales
+### Contar registros totales
   SELECT COUNT(*) FROM weather_data;
 
-- Registros por tipo (históricos vs pronósticos)
+### Registros por tipo (históricos vs pronósticos)
   SELECT data_type, COUNT(*) 
   FROM weather_data 
   GROUP BY data_type;
 
-- Últimas temperaturas registradas
+### Últimas temperaturas registradas
   SELECT l.location_name, w.date, w.temperature_2m_max
   FROM weather_data w
   LEFT JOIN locations l ON w.location_id = l.id
   ORDER BY w.date DESC
   LIMIT 10;
 
-- Salir
+### Salir
   \q
 
 # 🗄️ Base de datos (DDL)
